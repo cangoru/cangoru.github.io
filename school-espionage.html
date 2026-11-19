@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Вашего ребёнка слушают в классе</title>
+<meta name="description" content="Интерактивные доски в московских школах записывают звук и отправляют записи на сервер. Родителей никто не спросил. Что внутри, почему это не про безопасность и что с этим делать.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141312" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Вашего ребёнка слушают в классе">
+<meta property="og:description" content="Интерактивные доски в московских школах записывают звук и отправляют записи на сервер. Родителей никто не спросил.">
+<meta property="og:locale" content="ru_RU">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%238C1B1B'/%3E%3Crect x='13' y='6' width='6' height='12' rx='3' fill='%23fff'/%3E%3Cpath d='M9 16a7 7 0 0 0 14 0' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M16 23v3' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#FBFAF7; --ink:#1A1A1A; --muted:#5F5A54; --faint:#8A837A;
+  --accent:#8C1B1B; --signal:#C2321E;
+  --line:#E2DDD4; --card:#F3EFE8; --code:#F6F3EE; --code-line:#DED7CB;
+  --shadow:0 1px 2px rgba(26,26,26,.05), 0 8px 24px -16px rgba(26,26,26,.18);
+  --serif:ui-serif,"PT Serif","Noto Serif","Liberation Serif",Georgia,"Times New Roman",serif;
+  --sans:ui-sans-serif,system-ui,"PT Sans","Noto Sans","Liberation Sans","Segoe UI",Roboto,Arial,sans-serif;
+  --mono:ui-monospace,"Noto Sans Mono","Liberation Mono","SFMono-Regular",Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#141312; --ink:#EDE9E3; --muted:#A9A29A; --faint:#7C766E;
+    --accent:#E08A7C; --signal:#E4634B;
+    --line:#2E2A26; --card:#1D1B19; --code:#1B1917; --code-line:#332E29;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--serif); font-size:clamp(17px,.55rem + 1.05vw,20px);
+  line-height:1.65; font-synthesis-weight:none;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-wrap:break-word; hyphens:auto;
+}
+.wrap{max-width:41rem;margin:0 auto;padding:0 clamp(1.1rem,4vw,2rem)}
+.wrap--wide{max-width:56rem}
+
+/* progress */
+#progress{position:fixed;inset:0 0 auto 0;height:3px;background:transparent;z-index:50;pointer-events:none}
+#progress > i{display:block;height:100%;width:0;background:var(--signal);transform-origin:0 50%}
+
+/* header */
+header.top{padding:clamp(2.6rem,9vw,5.5rem) 0 clamp(1.4rem,4vw,2.2rem)}
+.kicker{
+  font-family:var(--sans); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--muted); font-weight:600;
+}
+h1{
+  font-family:var(--sans); font-weight:800; letter-spacing:-.02em; line-height:1.03;
+  font-size:clamp(2.15rem,6.6vw,3.6rem); margin:.55em 0 .35em; text-wrap:balance; hyphens:none;
+}
+h1 .hush{color:var(--accent)}
+.standfirst{
+  font-family:var(--sans); font-size:clamp(1rem,.5rem + .9vw,1.18rem); line-height:1.5;
+  color:var(--muted); max-width:34em; margin:0 0 1.5rem; text-wrap:pretty; hyphens:none;
+}
+.byline{
+  display:flex; flex-wrap:wrap; gap:.4rem 1.1rem; align-items:center;
+  font-family:var(--sans); font-size:.78rem; letter-spacing:.02em; color:var(--faint);
+  border-top:1px solid var(--line); padding-top:.9rem;
+}
+.byline span{white-space:nowrap}
+
+/* toc */
+nav.toc{
+  font-family:var(--sans); font-size:.86rem; background:var(--card);
+  border:1px solid var(--line); border-radius:5px; padding:1rem 1.1rem; margin:1.5rem 0 2.4rem;
+  box-shadow:var(--shadow);
+}
+nav.toc p{margin:0 0 .55rem;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+nav.toc ol{margin:0;padding:0;list-style:none;counter-reset:toc;columns:2;column-gap:1.6rem}
+@media (max-width:40rem){nav.toc ol{columns:1}}
+nav.toc li{counter-increment:toc;margin:.18rem 0;break-inside:avoid}
+nav.toc a{color:var(--ink);text-decoration:none;display:flex;gap:.5rem;padding:.12rem 0;border:0}
+nav.toc a::before{content:counter(toc,decimal-leading-zero);color:var(--accent);font-variant-numeric:tabular-nums;font-size:.78em;padding-top:.22em}
+nav.toc a:hover{color:var(--accent)}
+nav.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* prose */
+main{counter-reset:sec}
+main p{margin:0 0 .95em;text-wrap:pretty}
+.lead{-webkit-hyphens:auto;hyphens:auto}
+a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:.18em}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+strong{font-weight:700}
+
+section{margin:0 0 .4em;scroll-margin-top:2rem}
+h2{
+  counter-increment:sec; font-family:var(--sans); font-weight:750; letter-spacing:-.012em;
+  font-size:clamp(1.3rem,1rem + 1.2vw,1.62rem); line-height:1.2; margin:2.1em 0 .55em;
+  hyphens:none; text-wrap:balance;
+}
+h2::before{
+  content:counter(sec,decimal-leading-zero); display:block;
+  font-size:.66rem; letter-spacing:.16em; color:var(--accent);
+  font-variant-numeric:tabular-nums; margin-bottom:.45em; font-weight:700;
+}
+h2 + p{margin-top:0}
+h3{
+  font-family:var(--sans); font-weight:700; font-size:1rem; line-height:1.35;
+  margin:1.6em 0 .35em; hyphens:none;
+}
+h3 .n{color:var(--accent);font-variant-numeric:tabular-nums;margin-right:.45em}
+h3 + p{margin-top:0}
+
+blockquote{
+  margin:1.6em 0; padding:.15em 0 .15em 1.1em;
+  border-left:3px solid var(--signal); color:var(--ink);
+  font-size:1.06em; font-style:normal; line-height:1.5;
+}
+blockquote p{margin:0 0 .5em}
+blockquote p:last-child{margin-bottom:0}
+blockquote cite{display:block;font-family:var(--sans);font-size:.78rem;color:var(--muted);font-style:normal;margin-top:.7em}
+
+/* contrast (july / october) */
+.contrast{
+  display:grid;grid-template-columns:1fr 1fr;gap:0;margin:1.7em 0;
+  border:1px solid var(--line);border-radius:5px;overflow:hidden;background:var(--card);
+  font-family:var(--sans);font-size:.88rem;line-height:1.45;box-shadow:var(--shadow);
+}
+@media (max-width:34rem){.contrast{grid-template-columns:1fr}}
+.contrast > div{padding:.9rem 1rem}
+.contrast > div + div{border-left:1px solid var(--line)}
+@media (max-width:34rem){.contrast > div + div{border-left:0;border-top:1px solid var(--line)}}
+.contrast h4{
+  margin:0 0 .6rem;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);font-weight:700;
+}
+.contrast ul{margin:0;padding:0;list-style:none}
+.contrast li{position:relative;padding-left:1.15em;margin:.34rem 0;color:var(--ink)}
+.contrast li::before{content:"—";position:absolute;left:0;color:var(--faint)}
+.contrast .now h4{color:var(--accent)}
+
+/* code */
+.code{position:relative;margin:1.1em 0 1.5em}
+pre{
+  margin:0;background:var(--code);border:1px solid var(--code-line);border-radius:5px;
+  padding:.85rem 2.9rem .85rem 1rem;overflow-x:auto;
+  font-family:var(--mono);font-size:.82rem;line-height:1.55;hyphens:none;white-space:pre;
+  -webkit-overflow-scrolling:touch;
+}
+pre code{font-family:inherit;white-space:pre;color:var(--ink)}
+.copy{
+  position:absolute;top:.45rem;right:.45rem;display:none;
+  font-family:var(--sans);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);background:var(--bg);border:1px solid var(--code-line);
+  border-radius:4px;padding:.28rem .5rem;cursor:pointer;
+}
+.js .copy{display:block}
+.copy:hover{color:var(--accent);border-color:var(--accent)}
+.copy:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+code.inline{
+  font-family:var(--mono);font-size:.86em;background:var(--code);
+  border:1px solid var(--code-line);border-radius:3px;padding:.06em .32em;white-space:nowrap;
+}
+
+/* steps */
+ol.steps{list-style:none;margin:1.2em 0 1.6em;padding:0;counter-reset:step}
+ol.steps > li{
+  counter-increment:step;position:relative;padding-left:2.4rem;margin:0 0 1.1em;
+}
+ol.steps > li::before{
+  content:counter(step);position:absolute;left:0;top:.08em;
+  width:1.6rem;height:1.6rem;border-radius:50%;
+  background:var(--accent);color:var(--bg);
+  font-family:var(--sans);font-size:.8rem;font-weight:700;
+  display:grid;place-items:center;font-variant-numeric:tabular-nums;
+}
+ol.steps > li > strong{display:block;font-family:var(--sans);font-size:.98rem;margin-bottom:.15em;hyphens:none}
+
+/* rule + footer */
+hr.end{border:0;border-top:1px solid var(--line);margin:2.8rem 0 1.2rem}
+footer.colophon{
+  font-family:var(--sans);font-size:.82rem;line-height:1.6;color:var(--muted);
+  padding-bottom:clamp(2.5rem,7vw,4rem);
+}
+footer.colophon p{margin:0 0 .8em;max-width:36em}
+footer.colophon .url{
+  font-family:var(--mono);font-size:.78rem;color:var(--ink);
+  background:var(--code);border:1px solid var(--code-line);border-radius:4px;
+  padding:.5rem .7rem;display:inline-block;max-width:100%;
+  overflow-wrap:anywhere;word-break:break-all;
+}
+.top-link{
+  display:inline-block;margin-top:1.4rem;font-family:var(--sans);font-size:.78rem;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-decoration:none;border:0;
+}
+.top-link:hover{color:var(--accent)}
+
+@media print{
+  /* печать всегда светлая, даже если браузер в тёмной теме */
+  :root{
+    --bg:#fff; --ink:#000; --muted:#333; --faint:#555; --accent:#7A1717;
+    --signal:#A32A19; --line:#BDBDBD; --card:#F4F2EE; --code:#F6F4F0; --code-line:#C9C4BB;
+    --shadow:none;
+  }
+  body{font-size:10.5pt;background:#fff;color:#000}
+  #progress,nav.toc,.copy,.top-link{display:none!important}
+  a{color:#000;text-decoration:none}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:.8em;word-break:break-all}
+  h1{font-size:26pt}
+  h2{page-break-after:avoid;break-after:avoid}
+  blockquote,pre,.contrast{page-break-inside:avoid;break-inside:avoid}
+  .wrap{max-width:none}
+  @page{margin:18mm 17mm}
+}
+</style>
+</head>
+<body>
+<div id="progress" aria-hidden="true"><i></i></div>
+
+<header class="top">
+  <div class="wrap">
+    <h1>Вашего ребёнка<br><span class="hush">слушают в классе.</span></h1>
+    <p class="standfirst">Интерактивные доски в московских школах записывают звук и отправляют записи на сервер. Родителей никто не спросил.</p>
+    <div class="byline">
+      <span>Разбор открытых файлов</span>
+      <span aria-hidden="true">·</span>
+      <span>≈ 9 минут чтения</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <nav class="toc" aria-label="Содержание">
+      <p>Содержание</p>
+      <ol>
+        <li><a href="#proishodit">Что именно происходит</a></li>
+        <li><a href="#versii">Что изменилось между версиями</a></li>
+        <li><a href="#bezopasnost">Почему это не про безопасность</a></li>
+        <li><a href="#zakon">А это законно?</a></li>
+        <li><a href="#delat">Что делать</a></li>
+        <li><a href="#ne-nado">Чего делать не надо</a></li>
+        <li><a href="#uchitel">Если вы учитель</a></li>
+        <li><a href="#dalshe">Что будет дальше</a></li>
+      </ol>
+    </nav>
+
+    <p class="lead">В московских школах стоят интерактивные панели — те самые большие экраны на стене, которые в последние годы заменили доски с мелом. В них обнаружили программу, которая включает микрофон и записывает, что происходит в классе: как говорит учитель, как отвечает ваш ребёнок, как шумит перемена.</p>
+
+    <p>Программу нашли не журналисты и не «иностранные агенты». Её нашёл учитель информатики, когда разбирал школьную панель. Он выложил файлы в открытый доступ: любой технически грамотный человек может скачать их и проверить сам, а не верить на слово. Ниже — что там внутри и что из этого следует.</p>
+
+    <blockquote>
+      <p>Если коротко: в классе появился диктофон, который никто не выключал. Он не пишет всё подряд, а ждёт команды — и команда приходит с сервера.</p>
+    </blockquote>
+
+    <section id="proishodit">
+      <h2>Что именно происходит</h2>
+      <p>Панель раз в десять минут связывается с сервером и спрашивает: записывать или нет? Если ответ «записывать» — включается микрофон, звук сжимается в файл и уходит на школьный сервер. После отправки запись с панели стирается: на самом устройстве ничего не остаётся, посмотреть потом «что там было» не получится. Вместе с записью отправляются служебные сведения: какая это панель, в какой сети она стоит, и даже хэш файла — чтобы точно знать, что запись не подменили по дороге.</p>
+      <p>Адрес, к которому обращается программа, содержит слово <code class="inline">speech-analytics</code> — «речевая аналитика». Это значит не просто хранение звука, а его разбор: кто говорил, сколько, как часто, что именно. Такие системы умеют находить ключевые слова, определять эмоции и считать, кто из детей активен, а кто молчит.</p>
+    </section>
+
+    <section id="versii">
+      <h2>Что изменилось между версиями</h2>
+      <p>Самое важное в этой истории — не микрофон, а то, как программу правили.</p>
+      <p>В июле версия называлась честно: «Агент для аудиозаписи урока». Она была подписана официальным ключом и — обратите внимание — выводила на экран уведомление: «идёт запись». Учитель видел, что его слушают.</p>
+      <p>В октябре вышла новая версия. Из неё убрали уведомление. Убрали подпись. Описание заменили на нейтральное: «Агент обеспечивает проведение урока» — как будто это часть нормальной работы панели. А ещё добавили функцию, которая сама снимает блокировку с микрофона: даже если микрофон в системе выключен, запись всё равно начнётся.</p>
+
+      <div class="contrast">
+        <div class="past">
+          <h4>Июль · версия 0.1.3</h4>
+          <ul>
+            <li>Называется «Агент для аудиозаписи урока»</li>
+            <li>Подписана официальным ключом</li>
+            <li>Показывает на экране: «идёт запись»</li>
+          </ul>
+        </div>
+        <div class="now">
+          <h4>Октябрь · версия 1.1.0</h4>
+          <ul>
+            <li>Называется «Агент обеспечивает проведение урока»</li>
+            <li>Подпись убрана</li>
+            <li>Уведомление убрано</li>
+            <li>Сама снимает блокировку с микрофона</li>
+          </ul>
+        </div>
+      </div>
+
+      <blockquote>
+        <p>Три правки, каждая по отдельности выглядит мелочью. Вместе они читаются однозначно: сделать так, чтобы работало, но никто не заметил.</p>
+      </blockquote>
+    </section>
+
+    <section id="bezopasnost">
+      <h2>Почему это не про безопасность</h2>
+      <p>Обычно на такой разговор отвечают: «это для безопасности детей». Но у охраны школы есть другие инструменты, и они не требуют записи уроков. Камеры в коридорах, турникеты, тревожная кнопка — всё это существует и никого не смущает. Микрофон в кабинете не охраняет вход, он слушает урок.</p>
+      <p>Есть деталь, которая не оставляет сомнений. Когда панель ставят в школу, её заносят в базу с полями «школа», «корпус», «кабинет». То есть у каждой записи есть точный адрес — вплоть до номера кабинета, где сидит ваш ребёнок. Это уже не «записали что-то где-то». Это список с адресами.</p>
+      <p>И ещё: в октябре файлы новой версии удалили с официального сервера. Это стандартный ход — нет файла, нет и вопроса. Но старые копии уже разошлись по рукам, и их хэши опубликованы. Спрятать не получилось.</p>
+    </section>
+
+    <section id="zakon">
+      <h2>А это законно?</h2>
+      <p>Короткий ответ: никто не доказал, что законно. Родителей не спрашивали. Учителей не спрашивали. Согласия на запись голоса ребёнка не брал никто, а голос — это персональные данные, и для их обработки нужно основание, а не «так решили в департаменте».</p>
+      <p>И самое практичное: <strong>нет ни одного нормативного документа, который обязывал бы школу держать эту программу на панелях</strong>. Директор, который её удалит, не нарушит ни один приказ. Он просто выключит микрофон в своём кабинете.</p>
+    </section>
+
+    <section id="delat">
+      <h2>Что делать</h2>
+      <p>Пять шагов. Любой из них полезен сам по себе, все вместе — сильно.</p>
+
+      <ol class="steps">
+        <li>
+          <strong>Написать директору. На бумаге</strong>
+          <p>Не в чате, не на собрании, где всё закончится словами «мы разберёмся». Бумажное обращение регистрируют, на него обязаны ответить, и оно остаётся в делопроизводстве. По одному вопросу: установлена ли на школьных панелях программа аудиозаписи и на каком основании. Попросите указать в ответе документ, на который они опираются. Такой документ вряд ли существует — и это будет видно из ответа.</p>
+        </li>
+        <li>
+          <strong>Проверить самому</strong>
+          <p>Если у вас есть доступ к панели (или знакомый учитель информатики), всё проверяется одной командой на самой панели. Она покажет, установлен ли пакет записи:</p>
+          <div class="code">
+            <pre><code>rpm -qa | grep mesh-agent</code></pre>
+            <button class="copy" type="button" aria-label="Скопировать команду">Копировать</button>
+          </div>
+          <p>Если команда ничего не вывела — программы нет. Если вывела название пакета с версией — она есть.</p>
+        </li>
+        <li>
+          <strong>Передать школьному техспециалисту</strong>
+          <p>Удалить программу может администратор компьютера, и это не взлом: он имеет право убрать чужой софт с вверенной ему техники.</p>
+          <div class="code">
+            <pre><code>sudo dnf remove mesh-agent-lesson-log
+sudo systemctl disable --now mesh-agent-lesson-log</code></pre>
+            <button class="copy" type="button" aria-label="Скопировать команды">Копировать</button>
+          </div>
+          <p>Не нужно ничего ломать, вскрывать или «хакерить». Достаточно штатного удаления пакета.</p>
+        </li>
+        <li>
+          <strong>Поговорить с другими родителями</strong>
+          <p>Один родитель — это «жалоба». Тридцать родителей на собрании — это уже обсуждаемый вопрос, от которого нельзя отмахнуться. Покажите им эту статью и файлы: они открытые, любой может проверить.</p>
+        </li>
+        <li>
+          <strong>Написать туда, где обязаны ответить</strong>
+          <p>Директор — первый адрес, но не единственный. Дальше: управляющий совет школы, окружное управление образования, Департамент образования, Роскомнадзор (защита персональных данных детей). Достаточно короткого письма с одним вопросом: на каком основании записывается голос детей и где хранятся записи.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section id="ne-nado">
+      <h2>Чего делать не надо</h2>
+      <p>Не надо ломать панели, заливать их краской, выдёргивать провода или устраивать атаки на школьные сайты.</p>
+      <p>Это не мораль, это расчёт. Первое: за разбитую технику ответит школа, а точнее — родители, из бюджета и из кармана. Второе: любая атака даёт готовый ответ «нас атакуют, поэтому нужны ещё большие меры и ещё больше слежки». Вы своими руками подарите им аргумент.</p>
+      <p>Единственное, чего они по-настоящему боятся, — это когда про них начинают говорить вслух и когда их файлы начинают удалять в конкретных школах. Слова работают лучше, чем ведро запросов.</p>
+    </section>
+
+    <section id="uchitel">
+      <h2>Если вы учитель</h2>
+      <p>Вам сложнее всех: вас «неформально предупредили», и директор может этим пугать. Но именно ваш голос весит больше любого другого. Один запрос от учителя — «покажите документ, на основании которого в моём кабинете работает микрофон» — это уже другое дело, чем запрос от родителя. Не обязательно подписываться под ним лично: коллективное обращение от нескольких учителей работает так же.</p>
+    </section>
+
+    <section id="dalshe">
+      <h2>Что будет дальше</h2>
+      <p>Мы собираем архив: файлы обеих версий программы, их контрольные суммы, описания и инструкции по проверке — чтобы каждый мог убедиться сам и чтобы это не исчезло, как исчезли файлы с официального сервера.</p>
+    </section>
+
+    <blockquote>
+      <p>Микрофон в классе — это не про безопасность. Это про то, что кто-то решил, что спрашивать не обязательно. Пока об этом молчат, так и будет.</p>
+    </blockquote>
+
+    <hr class="end">
+
+    <footer class="colophon">
+      <p>Текст можно свободно перепечатывать, копировать и расклеивать без изменений — на то он и написан.</p>
+      <p>Файлы программы, контрольные суммы и порядок проверки — в открытом архиве. Любой, кто умеет читать команды, может проверить всё сам, не веря нам на слово.</p>
+      <p>Разбор и файлы:<br>
+        <a class="url" href="https://ravyn-hollow.github.io/mesh-agent-lesson-log/">https://ravyn-hollow.github.io/mesh-agent-lesson-log/</a>
+      </p>
+      <a class="top-link" href="#top">↑ Наверх</a>
+    </footer>
+
+  </div>
+</main>
+
+<script>
+(function(){
+  document.documentElement.classList.add('js');
+  var bar = document.querySelector('#progress > i');
+  var top = document.documentElement;
+
+  function update(){
+    var max = top.scrollHeight - top.clientHeight;
+    var y = top.scrollTop || document.body.scrollTop;
+    bar.style.width = (max > 0 ? Math.min(100, (y / max) * 100) : 0) + '%';
+  }
+  window.addEventListener('scroll', update, {passive:true});
+  window.addEventListener('resize', update);
+  update();
+
+  Array.prototype.forEach.call(document.querySelectorAll('.copy'), function(btn){
+    btn.addEventListener('click', function(){
+      var text = btn.parentNode.querySelector('code').textContent;
+      var done = function(){
+        var old = btn.textContent;
+        btn.textContent = 'Готово';
+        setTimeout(function(){ btn.textContent = old; }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function(){});
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
